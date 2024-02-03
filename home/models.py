@@ -11,6 +11,6 @@ class BaseModel(models.Model):
         abstract = True
 
 class Todo(BaseModel):
-    title = models.CharField(_("Title"), max_length=100)
+    title = models.CharField( max_length=100)
     description = models.TextField()
     is_done = models.BooleanField(default=False)
