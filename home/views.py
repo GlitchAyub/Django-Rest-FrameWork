@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from .serializer import TodoSerializer
 from .models import Todo
 from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework.decorators import action
+
 @api_view(['GET','POST','PATCH'])
 def home(request):
     if request.method == 'GET':
@@ -140,3 +143,12 @@ class TodoView(APIView):
                 "status": False,
                 "message": "invalid-data",
             })
+            
+class TodoViewSet(viewsets.ModelViewSet):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+    
+    
+    # @action(detail=False,method=['post'])
+    # def add_date_to_todo(self):
+    #     return None

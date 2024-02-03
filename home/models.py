@@ -14,3 +14,8 @@ class Todo(BaseModel):
     title = models.CharField(_("Title"), max_length=100)
     description = models.TextField()
     is_done = models.BooleanField(default=False)
+    
+
+class TimingTodo(BaseModel):
+    todo =models.ForeignKey(Todo,on_delete=models.CASCADE)
+    timing = models.DateField()
