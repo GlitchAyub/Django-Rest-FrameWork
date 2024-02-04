@@ -1,10 +1,12 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from .serializer import TodoSerializer,TimingTodoSerializer
 from .models import Todo,TimingTodo
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 @api_view(['GET','POST','PATCH'])
 def home(request):
@@ -32,8 +34,10 @@ def home(request):
             "message":"django is working",
             "method":"get"
         })     
-       
+
+
 @api_view(['Get'])
+@permission_classes([IsAuthenticated])
 def get_todo(request):
     todo_obj = Todo.objects.all()
     serializer = TodoSerializer(todo_obj,many=True)
@@ -109,8 +113,14 @@ def patch_todo(request):
 # class based view
 
 class TodoView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self,request):
-        todo_obj = Todo.objects.all()
+        print(request.user)
+        
+        # todo_obj = Todo.objects.all()
+        todo_obj = Todo.objects.filter(user=request.user)
+        
         serializer = TodoSerializer(todo_obj,many=True)
         return Response({
                 "status": True,
@@ -121,6 +131,7 @@ class TodoView(APIView):
     def post(self,request):
         try:
             data = request.data
+            data['user'] = request.user.id
             serializer = TodoSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
@@ -152,7 +163,9 @@ class TodoViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def get_date_to_todo(self, request):
+        
         objs = TimingTodo.objects.all()
+        
         serializer = TimingTodoSerializer(objs,many=True)
         return Response({
                     "status": True,
