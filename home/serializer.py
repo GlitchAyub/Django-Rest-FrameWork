@@ -35,3 +35,10 @@ class TodoSerializer(serializers.ModelSerializer):
     #             raise serializers.ValidationError('Title cannot contain special characters')
         
     #     return validated_data
+    
+class TimingTodoSerializer(serializers.ModelSerializer):
+    todo = TodoSerializer()
+    class Meta:
+        model = TimingTodo
+        exclude=['created_at','updated_at']
+        # depth=1
